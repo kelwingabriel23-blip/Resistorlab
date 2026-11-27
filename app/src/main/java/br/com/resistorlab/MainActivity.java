@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsets;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -16,6 +17,7 @@ import android.window.OnBackInvokedDispatcher;
 /** Mostra a interface do Resistor Lab, que está dentro do próprio APK (pasta assets). */
 public class MainActivity extends Activity {
     private WebView web;
+    private AiBridge ai;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,15 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true); // histórico e cálculos salvos
         settings.setAllowContentAccess(false);
-        web.setWebViewClient(new WebViewClient());
+        // A página só pode abrir arquivos do próprio app: a ponte da IA nunca fica exposta a sites.
+        web.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return !request.getUrl().toString().startsWith("file:///android_asset/");
+            }
+        });
+        ai = new AiBridge(this, web);
+        web.addJavascriptInterface(ai, "AndroidAI");
         root.addView(web);
         setContentView(root);
 
@@ -64,6 +74,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        ai.close();
         web.destroy();
         super.onDestroy();
     }

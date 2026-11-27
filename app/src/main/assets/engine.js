@@ -207,6 +207,9 @@
   };
 
   function lesson(c) {
+    if (c.kind === 'delta') return api.deltaLesson(c);
+    if (c.kind === 'network') return api.networkLesson(c);
+    if (c.kind === 'mixed') return api.mixedLesson(c);
     return (c.kind === 'series' || c.kind === 'parallel') ? circuitLesson(c) : pairLesson(c);
   }
 
@@ -359,6 +362,7 @@
 
   /* ---------- perguntas ao professor (respostas por regras, funciona offline) ---------- */
   var CONCEPTS = [
+    [/\bmisto\b/, 'Circuito misto: combina trechos em série e em paralelo. Resolve-se trocando um grupo de cada vez por seu resistor equivalente, do mais interno para o mais externo.'],
     [/\bserie\b/, 'Série: resistores em fila, com um único caminho. A corrente é a mesma em todos, a tensão se divide e Req = R1 + R2 + …'],
     [/\bparalelo\b/, 'Paralelo: resistores ligados entre os mesmos dois pontos. A tensão é a mesma em todos, a corrente se divide e 1/Req = 1/R1 + 1/R2 + …'],
     [/\b(corrente|ampere|amperes)\b/, 'Corrente (I) é o fluxo de carga elétrica. É medida em ampères (A). 1 mA é a milésima parte de 1 A.'],
@@ -374,6 +378,7 @@
     if (named && steps[+named[1] - 1]) { index = +named[1] - 1; st = steps[index]; }
     if (!q) return 'Escreva sua dúvida ou toque em uma das perguntas prontas.';
     var has = function (re) { return re.test(q); };
+    if (steps[0].order && has(/primeir|ordem|comec|qual grupo/)) return steps[0].order;
     if (has(/divi[ds]|virgula|decima|resto|conta armada/)) {
       if (!st.divisions.length) {
         var w = steps.map(function (x, i) { return x.divisions.length ? i + 1 : 0; }).filter(Boolean);
@@ -402,6 +407,9 @@
   var TOL = 0.01; /* aceita 1% de diferença por arredondamento */
 
   function fields(c) {
+    if (c.kind === 'delta') return api.deltaFields(c);
+    if (c.kind === 'network') return api.networkFields(c);
+    if (c.kind === 'mixed') return api.mixedFields(c);
     var f = [{ key: 'Req', label: 'Resistência total', unit: 'Ω', value: c.Req }];
     if (c.known === 'none') return f;
     var total = c.known === 'V' ? { key: 'I', label: 'Corrente total', unit: 'A', value: c.I } : { key: 'V', label: 'Tensão total', unit: 'V', value: c.V };
@@ -485,6 +493,9 @@
   function matches(u, v) { return v === 0 ? u === 0 : Math.abs(u - v) <= Math.abs(v) * TOL; }
 
   function diagnose(c, key, user, answers) {
+    if (c.kind === 'delta') return api.deltaDiagnose(c, key, user);
+    if (c.kind === 'network') return api.networkDiagnose(c, key, user, answers);
+    if (c.kind === 'mixed') return api.mixedDiagnose(c, key, user, answers);
     var f = fields(c).filter(function (x) { return x.key === key; })[0];
     var out = { key: key, label: f.label, unit: f.unit, user: user, expected: f.value, topic: topicOf(c, f), ok: matches(user, f.value), carried: false, message: '' };
     if (out.ok) { out.message = 'Correto!'; return out; }

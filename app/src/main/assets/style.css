@@ -65,4 +65,14 @@ details>*:not(summary){margin-top:8px}
 .verdict.ok{border-color:var(--ok);background:#3ce6a414}.verdict.bad{border-color:var(--bad);background:#ff6b8114}
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--cyan);color:#02101f;font-weight:600;padding:10px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+/* circuitos mistos */
+.stack{display:flex;flex-direction:column;gap:8px;min-width:0}
+.group{display:flex;flex-direction:column;gap:8px;min-width:0;border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:8px 6px 8px 8px;background:#2f7bff0d}
+.group.series{border-left-color:var(--blue)}
+.group .field{gap:5px}.group .field>select{width:68px;padding-inline:6px}.group .grow>select{width:100%}.group .x{width:40px}
+.group input{padding-inline:8px}
+/* circuito livre */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+.pair .field{min-width:0}.pair .field>.grow>select{width:100%}
+.group.component .field>.grow>b{display:block;color:var(--cyan);margin-bottom:4px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

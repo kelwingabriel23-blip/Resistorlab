@@ -1,6 +1,6 @@
 # Resistor Lab
 
-Calculadora de circuitos resistivos com o Professor de Cálculos. App Android que funciona sem internet.
+Calculadora de circuitos resistivos com o Professor de Cálculos. App Android que funciona sem internet (só o Professor com IA, opcional, usa a rede).
 
 ## Como gerar o APK
 
@@ -20,14 +20,27 @@ O APK de depuração serve para testes e uso pessoal. Para publicar na Play Stor
 Cada compilação no GitHub pode usar uma chave de depuração diferente. Se a instalação de uma atualização falhar,
 desinstale a versão anterior (isso apaga o histórico).
 
-## Estrutura
-- `app/src/main/assets/engine.js`: fórmulas, validação, aulas, perguntas e correção
-- `app/src/main/assets/app.js` e `style.css`: telas e aparência
-- `app/src/main/java/.../MainActivity.java`: app Android (WebView local, sem permissão de internet)
-- `tests/engine.test.js`: testes (`node --test tests/engine.test.js`)
+## Estrutura (em `app/src/main/assets/`)
+- `engine.js`: série, paralelo, Lei de Ohm, potência e base do Professor
+- `mixed.js`, `mixed-ui.js`: circuitos mistos e desafios mistos
+- `network.js`, `network-ui.js`: ponte, triângulo/estrela, várias fontes (análise nodal) e seus desafios
+- `ai.js`, `ai-ui.js`: Professor com IA (opcional)
+- `app.js`, `style.css`: telas e aparência
+- `java/.../MainActivity.java`, `AiBridge.java`, `AiClient.java`: app Android, chave criptografada e chamada à API
+- `tests/`: testes (`node --test tests/*.test.js`)
+
+## Professor com IA (opcional)
+1. Crie uma chave em https://platform.claude.com (conta de API, cobrada conforme o uso). Prefira uma chave de um único workspace e defina um limite de gastos.
+2. No app instalado, abra **Professor com IA**, leia o aviso, cole a chave e ative.
+3. A chave é cifrada com o Android Keystore. Cada pergunta envia à Anthropic o texto, os passos do cálculo e até 4 perguntas e respostas anteriores da aula.
+4. Modelos: Claude Haiku 5.5 (padrão) e Claude Sonnet 5.5. Confira os preços atuais em https://platform.claude.com/docs/en/about-claude/pricing
+
+Esse modelo (cada pessoa com a própria chave) serve para uso pessoal. Para distribuir o app a outras pessoas com IA incluída,
+é preciso um servidor próprio que guarde a chave. Nunca coloque uma chave dentro do APK nem no repositório.
 
 ## Limites
-- O professor responde por regras, sem inteligência artificial. Ele entende dúvidas sobre as etapas, fórmulas, símbolos, divisões, unidades e conceitos básicos.
-- A correção identifica os erros mais comuns. Outros erros são marcados como errados, com a resolução da etapa.
-- Respostas com até 1% de diferença são aceitas.
-- Apenas circuitos em série ou em paralelo puros (sem circuitos mistos). Modelo ideal em corrente contínua.
+- Circuitos de corrente contínua com resistores e fontes ideais. Sem capacitores, indutores, diodos, corrente alternada ou fontes controladas.
+- Circuito livre: até 40 componentes e 16 nós.
+- A redução passo a passo entre dois pontos usa série, paralelo e estrela → triângulo. Em redes que isso não reduz, o valor e a explicação vêm do método nodal.
+- Sem IA, o professor responde por regras. A correção identifica os erros mais comuns e aceita até 1% de diferença.
+- A IA pode errar; os valores da calculadora são a referência.
